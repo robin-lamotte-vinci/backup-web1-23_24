@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 
-const multer = require('multer')
+const multer = require('multer');
 const storage = multer.diskStorage({
     destination: function (req, file, cb) {
         cb(null, 'public/images');
@@ -12,7 +12,7 @@ const storage = multer.diskStorage({
         // Math.round(Math.random() * 1E9)
         cb(null, uniquePrefix + '-' + file.originalname);
     }
-})
+});
 const upload = multer({ storage: storage });
 
 const validator = require('validator');
@@ -21,14 +21,14 @@ const validator = require('validator');
 const Exoplanet = require("../models/Exoplanet.js");
 
 /* GET exoplanets index. */
-router.get('/', function (req, res, next) {
+router.get('/', function (req, res, _next) {
     const exoplanetsTable = Exoplanet.list();
     res.render('exoplanets/index.hbs', { exoplanetsTable, errors: req.query.errors });
 });
 
 
 /* POST add exoplanet. */
-router.post('/add', upload.single('imageExoplanet'), function (req, res, next) {
+router.post('/add', upload.single('imageExoplanet'), function (req, res, _next) {
     console.log("POST ADD EXOPLANET");
     // validate name of explanet -> betweeen 3 and 100 character
     if (validator.isLength(req.body.uniqueNameExoplanet, { min: 3, max: 100 })) {
@@ -44,15 +44,14 @@ router.post('/add', upload.single('imageExoplanet'), function (req, res, next) {
             image: filename
         });
         res.redirect('/exoplanets');
-    }
-    else {
+    } else {
         res.redirect('/exoplanets?errors= Le nom d\'une exoplanète doit faire entre 3 et 100 caractères');
     }
 });
 
 
 /* GET search exoplanet. */
-router.get('/search', function (req, res, next) {
+router.get('/search', function (req, res, _next) {
     console.log("GET SEARCH EXOPLANET");
     const uniqueNameExoplanetParam = req.query.uniqueNameExoplanet;
     let min3charOK = false;
@@ -64,7 +63,7 @@ router.get('/search', function (req, res, next) {
     res.render('exoplanets/index.hbs', { exoplanetsTable, min3charOK });
 });
 
-router.post('/delete', (req, res, next) => {
+router.post('/delete', (req, res, _next) => {
     console.log("id Exoplanète à supprimer : " + req.body.id);
     Exoplanet.delete(req.body.id);
     res.redirect('/exoplanets');
@@ -73,7 +72,7 @@ router.post('/delete', (req, res, next) => {
 
 
 /* GET details exoplanet. */
-router.get('/details', function (req, res, next) {
+router.get('/details', function (req, res, _next) {
     console.log("GET DETAILS EXOPLANET");
     // convert string req.query.id to int
     // another solution is to use == instead of === in if instruction
@@ -84,7 +83,7 @@ router.get('/details', function (req, res, next) {
 });
 
 
-router.get('/filter', function (req, res, next) {
+router.get('/filter', function (req, res, _next) {
     const filter = req.query.filter;
     let exoplanetsTableFilter = [];
     if (filter === "Filtrer par hclass") {
@@ -102,7 +101,7 @@ router.get('/filter', function (req, res, next) {
 
 
 // display form to update exoplanet
-router.get('/update', function (req, res, next) {
+router.get('/update', function (req, res, _next) {
     console.log("GET UPDATE EXOPLANET");
     const exoplanetIdParam = parseInt(req.query.id);
     const exoplanetFound = Exoplanet.findById(exoplanetIdParam);
@@ -111,7 +110,7 @@ router.get('/update', function (req, res, next) {
 
 
 /* POST update exoplanet. */
-router.post('/update', function (req, res, next) {
+router.post('/update', function (req, res, _next) {
     console.log("POST UPDATE EXOPLANET");
     Exoplanet.save({
         id: parseInt(req.body.idExoplanet),

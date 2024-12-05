@@ -11,8 +11,8 @@ module.exports.save = (data) => {
 };
 
 module.exports.like = (id) => {
-    for (let message of messagesTable) {
-        if (message.id == id) {
+    for (const message of messagesTable) {
+        if (message.id === parseInt(id)) {
             message.nbLikes++;
             break;
         }

@@ -13,8 +13,7 @@ const session = require('express-session');
 hbs.registerHelper('exists', function (variable, options) {
   if (typeof variable !== 'undefined') {
     return options.fn(this);
-  }
-  else {
+  } else {
     // options.inverse == else block
     return options.inverse(this);
   }
@@ -26,8 +25,7 @@ hbs.registerHelper('exists', function (variable, options) {
 hbs.registerHelper('eq', function (a, b) {
   if (a === b) {
     return true;
-  }
-  else {
+  } else {
     return false;
   }
 });

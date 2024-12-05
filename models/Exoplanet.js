@@ -12,9 +12,7 @@ module.exports.save = (data) => {
         const stmt = db.prepare('INSERT INTO EXOPLANETS(unique_name, hclass, discovery_year, image) VALUES (?, ?, ?, ?)');
         const info = stmt.run(data.uniqueName, data.hClass, data.discoveryYear, data.image);
         console.log("exoplanet model save" + info.changes);
-    }
-    // id => update exoplanet
-    else {
+    } else { // id => update exoplanet
         const stmt = db.prepare('UPDATE EXOPLANETS SET unique_name = ?, hclass = ?, discovery_year = ?, ist = ?, pclass = ? WHERE exoplanet_id = ?');
         const info = stmt.run(data.uniqueName, data.hClass, data.discoveryYear, data.IST, data.pClass, data.id);
         console.log("exoplanet model save update" + info.changes);
@@ -42,8 +40,8 @@ module.exports.findById = (id) => {
 
 module.exports.searchByHclass = (hclass) => {
     return db.prepare('SELECT * FROM EXOPLANETS WHERE hclass = ?').all(hclass);
-}
+};
 
 module.exports.searchByYear = (year) => {
     return db.prepare('SELECT * FROM EXOPLANETS WHERE discovery_year = ?').all(year);
-}
+};

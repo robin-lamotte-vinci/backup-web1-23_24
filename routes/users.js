@@ -8,7 +8,7 @@ const saltRounds = 10;
 const validator = require('validator');
 
 /* form login / password */
-router.get('/', (req, res, next) => {
+router.get('/', (req, res, _next) => {
     console.log("USERS INDEX");
     if (req.session.login) {
         res.redirect("/members");
@@ -17,17 +17,16 @@ router.get('/', (req, res, next) => {
 });
 
 /* check login and password */
-router.post('/login', (req, res, next) => {
+router.post('/login', (req, res, _next) => {
     console.log("USERS LOGIN");
     // User in DB ? -> return the record of the user if found
     const userFound = User.find(req.body.userLogin);
     console.log("User found" + JSON.stringify(userFound));
     if (userFound) {
-        if (userFound.active == false) {
+        if (Boolean(userFound.active) === false) {
             req.session.errors = "Compte désactivé";
             res.redirect('/users');
-        }
-        else {
+        } else {
             if (bcrypt.compareSync(req.body.userPassword, userFound.password)) {
                 console.log("password correct");
                 req.session.login = req.body.userLogin;
@@ -39,38 +38,36 @@ router.post('/login', (req, res, next) => {
                     req.session.admin = false;
                     res.redirect('/members');
                 }
-            }
-            else {
+            } else {
                 console.log("bad password");
                 req.session.errors = "Mot de passe incorrect";
                 res.redirect('/users');
             }
         }
-    }
-    else {
+    } else {
         console.log("bad user");
         req.session.errors = "Utilisateur inconnu";
         res.redirect('/users');
     }
 });
 
-router.get('/logout', (req, res, next) => {
+router.get('/logout', (req, res, _next) => {
     console.log("USERS LOGOUT");
     req.session.destroy();
     res.redirect('/users');
 });
 
-router.get('/register', (req, res, next) => {
+router.get('/register', (req, res, _next) => {
     console.log("USERS REGISTER");
     res.render('users/register', { errors: req.session.errors });
     req.session.errors = null;
 
 });
 
-router.post('/add', (req, res, next) => {
+router.post('/add', (req, res, _next) => {
     console.log("USERS ADD");
     // validation 
-    let errors = [];
+    const errors = [];
     if (!validator.isLength(req.body.userName, { min: 3, max: 100 })) errors.push("Le nom doit avoir 3 caractères minimum");
     if (!validator.isAlphanumeric(req.body.userName)) errors.push("Le nom doit contenir uniquement des caractères alphanumériques");
     if (!validator.isLength(req.body.userFirstname)) errors.push("Le prénom doit avoir 3 caractères minimum");
@@ -78,9 +75,9 @@ router.post('/add', (req, res, next) => {
     if (!validator.isAlphanumeric(req.body.userFirstname, "fr-FR", { ignore: '-' })) errors.push("Le prénom doit contenir uniquement des caractères alphanumériques");
     if (!validator.isEmail(req.body.userEmail)) errors.push("L'email entré n'est pas correct !");
     if (!validator.isStrongPassword(req.body.userPassword, { minLength: 2, minLowercase: 0, minUppercase: 0, minNumbers: 0, minSymbols: 0, returnScore: false })) errors.push("Le mot de passe n'et pas assez fort : 2 caractères minimum, ... !");
-    if (req.body.userPassword != req.body.userPasswordConfirmation) errors.push("Les mot de passes ne correspondent pas");
+    if (req.body.userPassword !== req.body.userPasswordConfirmation) errors.push("Les mot de passes ne correspondent pas");
     if (User.find(req.body.userEmail)) errors.push("Email/Utilisateur déjà présent en DB");
-    if (errors.length == 0) {
+    if (errors.length === 0) {
         User.save({
             name: req.body.userName,
             firstname: req.body.userFirstname,
@@ -88,8 +85,7 @@ router.post('/add', (req, res, next) => {
             password: bcrypt.hashSync(req.body.userPassword, saltRounds)
         });
         res.redirect('/users');
-    }
-    else {
+    } else {
         req.session.errors = errors;
         res.redirect('/users/register');
     }

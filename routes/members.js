@@ -3,14 +3,13 @@ const router = express.Router();
 
 const User = require('../models/User.js');
 
-router.get('/', (req, res, next) => {
+router.get('/', (req, res, _next) => {
     console.log("MEMBER INDEX");
     console.log("session variable : " + JSON.stringify(req.session));
     if (req.session.login) {
         const user = User.find(req.session.login);
         res.render('members/index', { user });
-    }
-    else {
+    } else {
         res.redirect('/users');
     }
 });
